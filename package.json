@@ -1,0 +1,35 @@
+{
+  "name": "webpack-demo",
+  "version": "1.0.0",
+  "description": "webpack es6 demo",
+  "main": "pack.js",
+  "scripts": {
+    "clean": "rm -rf bundle",
+    "watch": "webpack --watch --profile --progress -colors --display-error-details",
+    "dev": "webpack-dev-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mavv/pack.git"
+  },
+  "keywords": [
+    "webpack",
+    "es6"
+  ],
+  "author": "mavu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mavv/pack/issues"
+  },
+  "homepage": "https://github.com/mavv/pack#readme",
+  "devDependencies": {
+    "babel-core": "^6.0.17",
+    "babel-loader": "^6.0.1",
+    "eslint": "^1.8.0",
+    "eslint-loader": "^1.1.1",
+    "html-webpack-plugin": "^2.0.4",
+    "webpack": "^1.12.2",
+    "webpack-dev-server": "^1.12.1"
+  }
+}
