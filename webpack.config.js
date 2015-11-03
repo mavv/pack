@@ -6,11 +6,11 @@ module.exports = {
     app: './src/app.entry.js'
   },
   output: {
-    filename: './bundle/app.js',
-    contentBase: './bundle/'
+    path: 'bundle',
+    filename: '[name].js',
   },
   debug: true,
-  devtool: 'eval',
+  devtool: 'source-map',
   // target: 'node',
   devServer: {
     historyApiFallback: true,
@@ -39,12 +39,17 @@ module.exports = {
     ]
   },
   plugins: [
-    new CopyPlugin([
-      {
-        from: './src/src-index.html',
-        to: './bundle/index.html'
-      }
-    ]),
+    // new CopyPlugin([
+    //   {
+    //     from: './src/src-index.html',
+    //     to: './bundle/index.html'
+    //   }
+    // ]),
+    new HtmlWebpackPlugin({
+      title: '@play',
+      template: './src/src-index.html',
+      filename: 'index.html'
+    }),
     new webpack.NoErrorsPlugin(),
     new webpack.HotModuleReplacementPlugin(),
   ],
