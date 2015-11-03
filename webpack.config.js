@@ -1,15 +1,16 @@
 var webpack = require('webpack');
 var CopyPlugin = require('copy-webpack-plugin');
-
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
   entry: {
     app: './src/app.entry.js'
   },
   output: {
-    filename: './bundle/app.js'
+    filename: './bundle/app.js',
+    contentBase: './bundle/'
   },
   debug: true,
-  devtool: eval,
+  devtool: 'eval',
   // target: 'node',
   devServer: {
     historyApiFallback: true,
@@ -44,8 +45,8 @@ module.exports = {
         to: './bundle/index.html'
       }
     ]),
-    // new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
   ],
   resolve: {
     // you can now require('file') instead of require('file.coffee')
