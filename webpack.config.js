@@ -1,9 +1,15 @@
 var webpack = require('webpack');
 var CopyPlugin = require('copy-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var ExtractTextPlugin = require("extract-text-webpack-plugin");
+
+
 module.exports = {
   entry: {
-    app: './src/app.entry.js'
+    app: [
+        './src/less/app.less',
+        './src/app.entry.js'
+    ]
   },
   output: {
     path: 'bundle',
@@ -16,7 +22,8 @@ module.exports = {
     historyApiFallback: true,
     hot: true,
     inline: true,
-    progress: true
+    progress: true,
+    contentBase: 'bundle'
   },
   module: {
     loaders: [
@@ -24,10 +31,10 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel-loader'
       },
-      // {
-      //   test: /\.less$/,
-      //   loader: 'style-loader!css-loader!less-loader'
-      // }, // use ! to chain loaders
+      {
+        test: /\.less$/,
+        loader: ExtractTextPlugin.extract('style-loader', 'css-loader!less-loader')
+      }, // use ! to chain loaders
       // {
       //   test: /\.css$/,
       //   loader: 'style-loader!css-loader'
@@ -39,16 +46,21 @@ module.exports = {
     ]
   },
   plugins: [
-    // new CopyPlugin([
-    //   {
-    //     from: './src/src-index.html',
-    //     to: './bundle/index.html'
-    //   }
-    // ]),
+    new CopyPlugin([
+      {
+        from: './src/img',
+        to: 'img'
+      }
+    ]),
     new HtmlWebpackPlugin({
       title: '@play',
       template: './src/src-index.html',
       filename: 'index.html'
+    }),
+    new ExtractTextPlugin("css/app.css"),
+    new webpack.optimize.CommonsChunkPlugin({
+        children: true,
+        minChunks: Infinity
     }),
     new webpack.NoErrorsPlugin(),
     new webpack.HotModuleReplacementPlugin(),

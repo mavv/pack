@@ -4,8 +4,7 @@
 // document.body.appendChild(app);
 //
 // app.appendChild(component());
-
-
+console.log('saddsad');
 
   // <script>
   //   var slideshow = remark.create();

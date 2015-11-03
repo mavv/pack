@@ -13,27 +13,245 @@
     .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
   </style>
 </head>
-
+<!-- ![Default-aligned image](img/webpack-cli.png)
+.right[![Right-aligned image](img/webpack-cli-opts.png)] -->
 <script type="text/javascript" src="app.js"></script>
   <body>
-    <h3>asdad</h3>
     <textarea id="source">
 
+
 class: center, middle
-
-# Webpack wat?
-
----
-
-# Agenda
-
-1. Introduction
-2. Deep-dive
-3. ...
+# Webpack
 
 ---
 
-# Introduction
+class: middle
+# Webpack - why another module bundler?
+![what-is-webpack](img/what-is-webpack.png)
+
+---
+
+class: top
+# Webpack - wat? (I)
+* a *module bundler* - similar to browserify.
+* takes modules with dependencies and generates static assets representing those modules.
+* features:
+    *   **code spliting** & **chunks**
+    *   **loaders**
+    *   **plugins**
+    *   **hmr** - inject updated modules into the active runtime
+* installing
+ ```bash
+    $ npm i webpack -g
+  ```
+* running
+```bash
+   $ webpack
+```
+ ![webpack-cli-opts](./img/webpack-cli.png)
+
+---
+
+class: top
+# Webpack - wat? (II)
+
+* CLI options
+```bash
+   $ webpack --profile --progress --colors --display-error-details
+```
+![webpack-cli-opts](./img/webpack-cli-opts.png)
+* running through npm
+![webpack-npm](./img/webpack-npm.png)
+
+
+---
+
+class: top
+# Webpack - wat? (III)
+* can also be ranned using
+    * *watch mode*
+```bash
+$ webpack -watch
+```
+    * *webpack-dev-server*
+```bash
+$ webpack --watch --profile --progress -colors --display-error-details
+```
+* as other workflow tools uses a specific configuration *webpack.config.js* is
+considered as the default entry configuration
+```javascript
+    module.exports = {
+        entry: {
+            app: './app.entry.js',
+        }
+        output: {
+            path: 'bundle',
+            filename: "[name].js"
+        }
+    };
+```
+
+---
+
+class: top
+# Webpack - code spliting (I)
+
+* 2 types of dependencies in the dependency tree: *sync* & *async.
+    * async dependencies act as split points & form a new *chunk*
+
+* **code spliting** = extracting common code into
+    * a shared chunk
+    * an on demand loaded chunk
+
+
+* putting all code in a single file is not efficient for big web apps,
+    so webpack splits your codebase into **chunks** which are loaded on demand.
+
+* chunk content: all dependencies at a split point go into a new chunk & are loaded recursively
+
+---
+
+class: top
+# Webpack - code spliting (II)
+
+
+* chunk *optimization*:
+    * If two chunks contain the same modules, they are merged into one.
+    * If a module is available in all parents of a chunk, it’s removed from that chunk.
+    * If a chunk contains all modules of another chunk, this is stored. It fulfills multiple chunks.
+* chunk *types*:
+    * **entry** chunk = contains the runtime plus a bunch of modules
+                  ->
+    * **normal** chunk = contains no runtime but a bunch of modules
+    * **initial** chunk (non-entry) = normal chunk + optimization treats it as more important as it
+    counts toward the initial time ()
+
+---
+
+class: top
+# Webpack Loaders
+* are transformations that are applied on a resource file of your app.
+* are functions (running in node.js) that take the source of a resource file as the parameter and return the new source.
+* allow you to preprocess files as you **require()** or 'load' them.
+* features:
+    * chainable - are applied in a pipeline to the resource
+    * sync OR async
+    * accept query params
+    * can be bound to extensions (RegExp in config)
+    * can be called using short names ``babel-loader`` is equivalent to ``babel``
+```javascript
+    module.exports = {
+        // ...
+        module: {
+            loaders: [
+                {
+                    test: /\.js/,
+                    loader: 'babel'
+                }
+            ]
+        },
+        // ..
+    };
+```
+
+---
+
+class: top
+# Webpack Loaders (II)
+* can hook up loader config in webpack js
+```javascript
+    module.exports = {
+        // ...
+        module: {
+            loaders: [
+                {
+                    test: /\.js/,
+                    loader: 'babel!eslint'
+                }
+            ]
+        },
+        eslint: {
+            configFile: '.eslintrc',
+            failOnError: true
+        }
+        // ..
+    };
+```
+
+---
+
+class: top
+# Webpack Loaders (III)
+* When it comes to transforming css/less/bla style files
+    * it's possible to embed stylesheets into a webpack javascript bundle (require them)
+    * extract them using *extract-text-webpack-plugin*
+```javascript
+var ExtractTextPlugin = require("extract-text-webpack-plugin");
+module.exports = {
+    module: {
+        loaders: [
+            {
+                test: /\.css$/,
+                loader: ExtractTextPlugin.extract("style-loader", "css-loader")
+            },
+            {
+                test: /\.less$/,
+                loader: ExtractTextPlugin.extract("style", "css!less")
+            },
+            { test: /\.png$/, loader: "url-loader?mimetype=image/png" }
+        ]
+    },
+    plugins: [
+        new ExtractTextPlugin('styles.css'),
+        new ExtractTextPlugin('lessStyles.css')
+    ]
+};
+```
+
+---
+
+class: top
+# Webpack Plugins (I)
+* case study
+```javascript
+module.exports = {
+    // ..
+    plugins: [
+      new CopyPlugin([
+        {
+          from: './src/img',
+          to: 'img'
+        }
+      ]),
+      new HtmlWebpackPlugin({
+        title: '@play',
+        template: './src/src-index.html',
+        filename: 'index.html'
+      }),
+      new ExtractTextPlugin("css/app.css"),
+      new webpack.optimize.CommonsChunkPlugin({
+          children: true,
+          minChunks: Infinity
+      }),
+      new webpack.NoErrorsPlugin(),
+      new webpack.HotModuleReplacementPlugin(),
+    ]
+    // ..
+};
+```
+---
+
+class: top
+# Webpack Plugins (II)
+* *essentially*, **each plugin call binds a callback to fire at specific steps
+  throughout the build process**
+* offer you a way to
+    * hook up into the build process
+    * optimize it (optimize in production mostly
+
+* a *plugin* is installed once, calling its ``apply()``, as Webpack starts up
+
+---
 
     </textarea>
     <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
